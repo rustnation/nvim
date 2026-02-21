@@ -4,7 +4,8 @@ return {
   -- Loaded on demand; the keymap triggers setup on first press
   lazy = true,
   keys = {
-    { "<A-t>", mode = { "n", "t" }, desc = "Toggle build terminal (bottom-right)" },
+    { "<C-t>", mode = { "n", "t" }, desc = "Toggle build terminal (bottom-right)" },
+    { "<C-y>", mode = { "n", "t" }, desc = "Toggle fullscreen terminal" },
   },
   config = function()
     require("toggleterm").setup()
@@ -30,7 +31,30 @@ return {
       },
       -- Window-local options applied when the terminal opens
       on_open = function(term)
-        vim.wo[term.window].winhl = "Normal:Normal,FloatBorder:FloatBorder"
+        vim.api.nvim_set_hl(0, "TermBorder", { fg = "#00ffff" })
+        vim.wo[term.window].winhl = "Normal:Normal,FloatBorder:TermBorder"
+        vim.wo[term.window].winblend = 30
+      end,
+    })
+
+    -- Fullscreen terminal with 7-cell padding on every side.
+    local full_term = Terminal:new({
+      direction = "float",
+      hidden = true,
+      close_on_exit = false,
+      float_opts = {
+        border = "rounded",
+        width = function() return vim.o.columns - 14 end,
+        height = function() return vim.o.lines - 14 end,
+        row = 7,
+        col = 7,
+        zindex = 50,
+        title_pos = "center",
+      },
+      on_open = function(term)
+        vim.api.nvim_set_hl(0, "TermBorder", { fg = "#00ffff" })
+        vim.wo[term.window].winhl = "Normal:Normal,FloatBorder:TermBorder"
+        vim.wo[term.window].winblend = 30
       end,
     })
 
@@ -39,6 +63,11 @@ return {
       build_term:toggle()
     end
 
-    vim.keymap.set({ "n", "t" }, "<A-t>", _G.toggle_br_term, { desc = "Toggle build terminal (bottom-right)" })
+    _G.toggle_full_term = function()
+      full_term:toggle()
+    end
+
+    vim.keymap.set({ "n", "t" }, "<C-t>", _G.toggle_br_term, { desc = "Toggle build terminal (bottom-right)" })
+    vim.keymap.set({ "n", "t" }, "<C-y>", _G.toggle_full_term, { desc = "Toggle fullscreen terminal" })
   end,
 }
