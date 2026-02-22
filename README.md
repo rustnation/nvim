@@ -25,3 +25,14 @@ brew install tree-sitter-cli
 sudo apt install acpi
 ```
 
+## Install rg
+
+```shell
+brew install rg
+```
+
+## Install LazyGit
+
+```shell
+brew install lazygit
+```
