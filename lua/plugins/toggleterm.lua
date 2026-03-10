@@ -123,7 +123,16 @@ return {
           vim.api.nvim_set_hl(0, "CargoBorder", { fg = "#FF6600" })
           vim.wo[t.window].winhl = "Normal:Normal,FloatBorder:CargoBorder"
           vim.wo[t.window].winblend = 30
-          vim.keymap.set("n", "q", function() t:close() end, { buffer = t.bufnr, silent = true })
+          vim.keymap.set("n", "q", function() t:shutdown() end, { buffer = t.bufnr, silent = true })
+        end,
+        on_exit = function(t)
+          vim.schedule(function()
+            if vim.api.nvim_buf_is_valid(t.bufnr) then
+              vim.api.nvim_buf_call(t.bufnr, function()
+                vim.cmd("stopinsert")
+              end)
+            end
+          end)
         end,
       })
       term:open()
