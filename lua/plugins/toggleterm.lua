@@ -10,6 +10,7 @@ return {
     { "<C-k>", mode = { "n", "t" }, desc = "Claude Code" },
     { "<leader>rc", mode = "n", desc = "Cargo check" },
     { "<leader>rb", mode = "n", desc = "Cargo build" },
+    { "<leader>rr", mode = "n", desc = "Cargo run" },
   },
   config = function()
     require("toggleterm").setup()
@@ -150,8 +151,42 @@ return {
       claude_term:toggle()
     end
 
+    _G.cargo_run_full = function()
+      local term = Terminal:new({
+        cmd = "cargo run",
+        direction = "float",
+        close_on_exit = false,
+        float_opts = {
+          border = "rounded",
+          width = function() return vim.o.columns - 14 end,
+          height = function() return vim.o.lines - 14 end,
+          row = 7,
+          col = 7,
+          zindex = 50,
+          title_pos = "center",
+        },
+        on_open = function(t)
+          vim.api.nvim_set_hl(0, "CargoBorder", { fg = "#FF6600" })
+          vim.wo[t.window].winhl = "Normal:Normal,FloatBorder:CargoBorder"
+          vim.wo[t.window].winblend = 30
+          vim.keymap.set("n", "q", function() t:shutdown() end, { buffer = t.bufnr, silent = true })
+        end,
+        on_exit = function(t)
+          vim.schedule(function()
+            if vim.api.nvim_buf_is_valid(t.bufnr) then
+              vim.api.nvim_buf_call(t.bufnr, function()
+                vim.cmd("stopinsert")
+              end)
+            end
+          end)
+        end,
+      })
+      term:open()
+    end
+
     vim.keymap.set("n", "<leader>rc", function() _G.cargo_run("cargo check") end, { desc = "Cargo check" })
     vim.keymap.set("n", "<leader>rb", function() _G.cargo_run("cargo build") end, { desc = "Cargo build" })
+    vim.keymap.set("n", "<leader>rr", function() _G.cargo_run_full() end, { desc = "Cargo run" })
     vim.keymap.set({ "n", "t" }, "<C-t>", _G.toggle_br_term, { desc = "Toggle build terminal (bottom-right)" })
     vim.keymap.set({ "n", "t" }, "<C-y>", _G.toggle_full_term, { desc = "Toggle fullscreen terminal" })
     vim.keymap.set({ "n", "t" }, "<C-g>", _G.toggle_gemini_term, { desc = "Gemini CLI" })
