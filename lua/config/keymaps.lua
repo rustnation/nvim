@@ -6,3 +6,8 @@
 local map = vim.keymap.set
 map("n", "<leader>bn", "<cmd>bnext<CR>", { desc = "Open next buffer" })
 map("n", "<leader>bp", "<cmd>bprevious<CR>", { desc = "Open previous buffer" })
+
+-- Open file explorer at current file location
+map("n", "f", function()
+  Snacks.explorer.reveal()
+end, { desc = "Reveal current file in explorer" })
