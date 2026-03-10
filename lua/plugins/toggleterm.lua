@@ -94,8 +94,8 @@ return {
         title_pos = "center",
       },
       on_open = function(term)
-        vim.api.nvim_set_hl(0, "TermBorder", { fg = "#00ffff" })
-        vim.wo[term.window].winhl = "Normal:Normal,FloatBorder:TermBorder"
+        vim.api.nvim_set_hl(0, "CargoBorder", { fg = "#FF6600" })
+        vim.wo[term.window].winhl = "Normal:Normal,FloatBorder:CargoBorder"
         vim.wo[term.window].winblend = 30
         vim.keymap.set("t", "<C-k>", function() _G.toggle_claude_term() end, { buffer = term.bufnr, silent = true })
       end,
@@ -112,16 +112,16 @@ return {
         close_on_exit = false,
         float_opts = {
           border = "rounded",
-          width = function() return vim.o.columns - 14 end,
+          width = function() return math.floor(vim.o.columns * 0.6) end,
           height = function() return vim.o.lines - 14 end,
           row = 7,
-          col = 7,
+          col = function() return math.floor((vim.o.columns - math.floor(vim.o.columns * 0.6)) / 2) end,
           zindex = 50,
           title_pos = "center",
         },
         on_open = function(t)
-          vim.api.nvim_set_hl(0, "TermBorder", { fg = "#00ffff" })
-          vim.wo[t.window].winhl = "Normal:Normal,FloatBorder:TermBorder"
+          vim.api.nvim_set_hl(0, "CargoBorder", { fg = "#FF6600" })
+          vim.wo[t.window].winhl = "Normal:Normal,FloatBorder:CargoBorder"
           vim.wo[t.window].winblend = 30
           vim.keymap.set("n", "q", function() t:close() end, { buffer = t.bufnr, silent = true })
         end,
