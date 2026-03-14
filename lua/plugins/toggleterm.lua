@@ -103,6 +103,8 @@ return {
     })
 
     _G.toggle_br_term = function()
+      build_term.float_opts.row = vim.o.lines - 17
+      build_term.float_opts.col = vim.o.columns - 67
       build_term:toggle()
     end
 
